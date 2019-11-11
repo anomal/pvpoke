@@ -92,6 +92,11 @@ var RankerMaster = (function () {
 				// If you want to rank specfic Pokemon, you can enter their species id's here
 				
 				var allowedList = [];
+				var includeTypes = ["ghost", "psychic", "fighting", "steel"];
+				var excludeTypes = ["dark"];
+				var excludeIds = ["skarmory", "hypno"];
+				var excludeTags = ["mythical"];
+
 				
 				for(var i = 0; i < gm.data.pokemon.length; i++){
 					
@@ -127,7 +132,14 @@ var RankerMaster = (function () {
 							if((pokemon.dex > maxDexNumber)&&(releasedGen5.indexOf(pokemon.speciesId) == -1)){//&&(cup != undefined && battle.getCup().name != "gen-5")){
 								continue;
 							}
-							
+
+							if ((includeTypes.indexOf(pokemon.types[0]) < 0 && includeTypes.indexOf(pokemon.types[1]) < 0) 
+									|| excludeTypes.indexOf(pokemon.types[0]) > -1 || excludeTypes.indexOf(pokemon.types[1]) > -1
+									|| excludeIds.indexOf(pokemon.speciesId) > -1
+									|| excludeTags.indexOf(pokemon.tag) > -1) {
+								continue;
+							}
+
 							pokemonList.push(pokemon);
 						}
 					}
@@ -154,7 +166,7 @@ var RankerMaster = (function () {
 				var versusResults = {};
 
 				// run alg for x generations
-				var generations = 8000;
+				var generations = 16000;
 				for (var gen=0; gen<generations; gen++) {
 					if (gen % 100 == 0) {
 						console.log("gen: " + gen);
