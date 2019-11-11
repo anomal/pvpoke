@@ -83,7 +83,7 @@ var RankerMaster = (function () {
 				// Don't allow these Pokemon into the Great League. They can't be trusted.
 				
 				var bannedList = ["mewtwo","giratina_altered","groudon","kyogre","rayquaza","garchomp","latios","latias","palkia","dialga","heatran","giratina_origin","darkrai"];
-				var permaBannedList = ["rotom","rotom_fan","rotom_frost","rotom_heat","rotom_mow","rotom_wash","phione","manaphy","shaymin_land","shaymin_sky","arceus","arceus_bug","arceus_dark","arceus_dragon","arceus_electric","arceus_fairy","arceus_fighting","arceus_fire","arceus_flying","arceus_ghost","arceus_grass","arceus_ground","arceus_ice","arceus_poison","arceus_psychic","arceus_rock","arceus_steel","arceus_water","kecleon"]; // Don't rank these Pokemon at all yet
+				var permaBannedList = ["stunfisk","mandibuzz","jellicent","rotom","rotom_fan","rotom_frost","rotom_heat","rotom_mow","rotom_wash","phione","manaphy","shaymin_land","shaymin_sky","arceus","arceus_bug","arceus_dark","arceus_dragon","arceus_electric","arceus_fairy","arceus_fighting","arceus_fire","arceus_flying","arceus_ghost","arceus_grass","arceus_ground","arceus_ice","arceus_poison","arceus_psychic","arceus_rock","arceus_steel","arceus_water","kecleon"]; // Don't rank these Pokemon at all yet
 
 				var maxDexNumber = 493;
 				var releasedGen5 = ["snivy","servine","serperior","tepig","pignite","emboar","oshawott","dewott","samurott","lillipup","herdier","stoutland","purrloin","liepard","pidove","tranquill","unfezant","blitzle","zebstrika","foongus","amoonguss","drilbur","excadrill","litwick","lampent","chandelure","golett","golurk","deino","zweilous","hydreigon","pansage","panpour","pansear","simisage","simipour","simisear","ferroseed","ferrothorn","heatmor","durant","patrat","watchog","klink","klang","klinklang","yamask","cofagrigus","cobalion","meltan","melmetal"];
@@ -156,7 +156,9 @@ var RankerMaster = (function () {
 				// run alg for x generations
 				var generations = 4000;
 				for (var gen=0; gen<generations; gen++) {
-					console.log("gen: " + gen);
+					if (gen % 500 == 0) {
+						console.log("gen: " + gen);
+					}
 					var teamLen = teams.length;
 					for (var t=0; t<teamLen; t++) {
 						//console.log("Team" + t);
@@ -168,6 +170,15 @@ var RankerMaster = (function () {
 							if (i == mutationIndex) {
 								//console.log(getPokemonWithMovesId(team[i]) + " *");
 								var pokemon = getRandomPokemon(pokemonList);
+								if (pokemon.speciesId == team[i].speciesId) {
+									var maxIt = 10;
+									var oldId = getPokemonWithMovesId(team[i]);
+									var newId = getPokemonWithMovesId(pokemon);
+									for (var j=0; j<maxIt && oldId == newId; j++) {
+										randomizeMoves(pokemon);
+										newId = getPokemonWithMovesId(pokemon);
+									} 
+								}
 								mutatedTeam[i] = pokemon;
 							} else {
 								//console.log(getPokemonWithMovesId(team[i]));
