@@ -871,6 +871,14 @@ function Pokemon(id, i, b){
 		return battle;
 	}
 
+	this.getChargedMovePool = function() {
+		return this.chargedMovePool;	
+	}
+
+	this.getFastMovePool = function() {
+		return this.fastMovePool;	
+	}
+
 	// Buff or debuff stats given an array of buffs
 
 	this.applyStatBuffs = function(buffs){
