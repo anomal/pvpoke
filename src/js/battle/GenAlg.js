@@ -83,7 +83,11 @@ var RankerMaster = (function () {
 				// Don't allow these Pokemon into the Great League. They can't be trusted.
 				
 				var bannedList = ["mewtwo","giratina_altered","groudon","kyogre","rayquaza","garchomp","latios","latias","palkia","dialga","heatran","giratina_origin","darkrai"];
-				var permaBannedList = ["burmy_trash","burmy_sandy","burmy_plant","wormadam_plant","wormadam_sandy","wormadam_trash","mothim","cherubi","cherrim_overcast","cherrim_sunny","shellos_east_sea","shellos_west_sea","gastrodon_east_sea","gastrodon_west_sea","hippopotas","hippowdon","leafeon","glaceon","rotom","rotom_fan","rotom_frost","rotom_heat","rotom_mow","rotom_wash","uxie","azelf","mesprit","regigigas","giratina_origin","phione","manaphy","darkrai","shaymin_land","shaymin_sky","arceus","arceus_bug","arceus_dark","arceus_dragon","arceus_electric","arceus_fairy","arceus_fighting","arceus_fire","arceus_flying","arceus_ghost","arceus_grass","arceus_ground","arceus_ice","arceus_poison","arceus_psychic","arceus_rock","arceus_steel","arceus_water","jirachi"]; // Don't rank these Pokemon at all yet
+				var permaBannedList = ["rotom","rotom_fan","rotom_frost","rotom_heat","rotom_mow","rotom_wash","phione","manaphy","shaymin_land","shaymin_sky","arceus","arceus_bug","arceus_dark","arceus_dragon","arceus_electric","arceus_fairy","arceus_fighting","arceus_fire","arceus_flying","arceus_ghost","arceus_grass","arceus_ground","arceus_ice","arceus_poison","arceus_psychic","arceus_rock","arceus_steel","arceus_water","kecleon"]; // Don't rank these Pokemon at all yet
+
+				var maxDexNumber = 493;
+				var releasedGen5 = ["snivy","servine","serperior","tepig","pignite","emboar","oshawott","dewott","samurott","lillipup","herdier","stoutland","purrloin","liepard","pidove","tranquill","unfezant","blitzle","zebstrika","foongus","amoonguss","drilbur","excadrill","litwick","lampent","chandelure","golett","golurk","deino","zweilous","hydreigon","pansage","panpour","pansear","simisage","simipour","simisear","ferroseed","ferrothorn","heatmor","durant","patrat","watchog","klink","klang","klinklang","yamask","cofagrigus","cobalion","meltan","melmetal"];
+
 				
 				// If you want to rank specfic Pokemon, you can enter their species id's here
 				
@@ -119,6 +123,10 @@ var RankerMaster = (function () {
 							if((cup != undefined && cup.types.length > 0) && (cup.types.indexOf(pokemon.types[0]) < 0) && (cup.types.indexOf(pokemon.types[1]) < 0) ){	
 								continue;
 							}
+
+							if((pokemon.dex > maxDexNumber)&&(releasedGen5.indexOf(pokemon.speciesId) == -1)&&(cup != undefined && battle.getCup().name != "gen-5")){
+								continue;
+							}
 							
 							pokemonList.push(pokemon);
 						}
@@ -129,7 +137,7 @@ var RankerMaster = (function () {
 
 				// initialize population				
 
-				var populationSize = 2;
+				var populationSize = 3;
 				var pokemonPerTeam = 6;
 				var teams = [];
 
@@ -146,29 +154,30 @@ var RankerMaster = (function () {
 				var versusResults = {};
 
 				// run alg for x generations
-				var generations = 2000;
+				var generations = 4000;
 				for (var gen=0; gen<generations; gen++) {
+					console.log("gen: " + gen);
 					var teamLen = teams.length;
 					for (var t=0; t<teamLen; t++) {
-						console.log("Team" + t);
+						//console.log("Team" + t);
 						var team=teams[t];
 
 						var mutatedTeam = [];
 						var mutationIndex = gen % pokemonPerTeam;
 						for (var i=0; i<pokemonPerTeam; i++) {
 							if (i == mutationIndex) {
-								console.log(getPokemonWithMovesId(team[i]) + " *");
+								//console.log(getPokemonWithMovesId(team[i]) + " *");
 								var pokemon = getRandomPokemon(pokemonList);
 								mutatedTeam[i] = pokemon;
 							} else {
-								console.log(getPokemonWithMovesId(team[i]));
+								//console.log(getPokemonWithMovesId(team[i]));
 								mutatedTeam[i] = team[i];
 							}
 						}
 
 						var oldFitness = getFitness(team, pokemonList, versusResults);
 						var newFitness = getFitness(mutatedTeam, pokemonList, versusResults);
-						console.log("oldFitness: " + oldFitness);
+						//console.log("oldFitness: " + oldFitness);
 						
 						if (newFitness > oldFitness) {
 							teams[t] = mutatedTeam;
