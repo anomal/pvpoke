@@ -136,7 +136,7 @@ var RankerMaster = (function () {
 							if ((includeTypes.indexOf(pokemon.types[0]) < 0 && includeTypes.indexOf(pokemon.types[1]) < 0) 
 									|| excludeTypes.indexOf(pokemon.types[0]) > -1 || excludeTypes.indexOf(pokemon.types[1]) > -1
 									|| excludeIds.indexOf(pokemon.speciesId) > -1
-									|| excludeTags.indexOf(pokemon.tag) > -1) {
+									|| pokemon.tags.indexOf("mythical") > -1) {
 								continue;
 							}
 
@@ -166,7 +166,7 @@ var RankerMaster = (function () {
 				var versusResults = {};
 
 				// run alg for x generations
-				var generations = 16000;
+				var generations = 8000;
 				for (var gen=0; gen<generations; gen++) {
 					if (gen % 100 == 0) {
 						console.log("gen: " + gen);
@@ -244,6 +244,7 @@ var RankerMaster = (function () {
 			var battle = new Battle();
 			var myPokemon = new Pokemon(pokemon.speciesId, 0, battle);
 			myPokemon.initialize(battle.getCP());
+			myPokemon.baitShields = false;
 			this.randomizeMoves(myPokemon);
 			return myPokemon;
 		}
