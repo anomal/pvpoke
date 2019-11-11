@@ -206,8 +206,11 @@ var RankerMaster = (function () {
 
 		this.getRandomPokemon = function(pokemonList) {
 			var pokemon = pokemonList[Math.floor(Math.random() * pokemonList.length)];
-			this.randomizeMoves(pokemon);
-			return pokemon;
+			var battle = new Battle();
+			var myPokemon = new Pokemon(pokemon.speciesId, 0, battle);
+			myPokemon.initialize(battle.getCP());
+			this.randomizeMoves(myPokemon);
+			return myPokemon;
 		}
 
 		this.getFitness = function(team, pokemonList, versusResults) {
