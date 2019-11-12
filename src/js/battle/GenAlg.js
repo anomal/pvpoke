@@ -132,13 +132,13 @@ var RankerMaster = (function () {
 							if((pokemon.dex > maxDexNumber)&&(releasedGen5.indexOf(pokemon.speciesId) == -1)){//&&(cup != undefined && battle.getCup().name != "gen-5")){
 								continue;
 							}
-
-							if ((includeTypes.indexOf(pokemon.types[0]) < 0 && includeTypes.indexOf(pokemon.types[1]) < 0) 
+							
+							/*if ((includeTypes.indexOf(pokemon.types[0]) < 0 && includeTypes.indexOf(pokemon.types[1]) < 0) 
 									|| excludeTypes.indexOf(pokemon.types[0]) > -1 || excludeTypes.indexOf(pokemon.types[1]) > -1
 									|| excludeIds.indexOf(pokemon.speciesId) > -1
 									|| pokemon.tags.indexOf("mythical") > -1) {
 								continue;
-							}
+							}*/
 
 							pokemonList.push(pokemon);
 						}
@@ -164,9 +164,10 @@ var RankerMaster = (function () {
 				}
 
 				var versusResults = {};
+				var leadResults = {};
 
 				// run alg for x generations
-				var generations = 8000;
+				var generations = 5000;
 				for (var gen=0; gen<generations; gen++) {
 					if (gen % 100 == 0) {
 						console.log("gen: " + gen);
@@ -198,8 +199,8 @@ var RankerMaster = (function () {
 							console.log(s);
 						}
 
-						var oldFitness = getFitness(team, pokemonList, versusResults);
-						var newFitness = getFitness(mutatedTeam, pokemonList, versusResults);
+						var oldFitness = getFitness(team, pokemonList, versusResults, leadResults);
+						var newFitness = getFitness(mutatedTeam, pokemonList, versusResults, leadResults);
 
 						if (gen % 100 == 0) {
 							console.log("Current fitness: " + oldFitness);
@@ -249,16 +250,65 @@ var RankerMaster = (function () {
 			return myPokemon;
 		}
 
-		this.getFitness = function(team, pokemonList, versusResults) {
+		this.getFitness = function(team, pokemonList, versusResults, leadResults) {
 			const teamWins = new Set();
+			var maxLeadWins = 0;
 			var teamLen = team.length;
 			for (var m=0; m<teamLen; m++) {
 				var pokemon = team[m];
 				var pokemonListLen = pokemonList.length;
+				var leadWins = 0;
 				for (var opp=0; opp<pokemonListLen; opp++) {
 					var opponent = pokemonList[opp];
 					var versusId = getVersusId(pokemon, opponent);
 					var versusResult = versusResults[versusId];
+					var leadResult = leadResults[versusId];
+					if (leadResult != undefined) {
+ 						if (leadResult > 500) {
+							leadWins++;
+						}
+					} else {
+						var battle = new Battle();
+						battle.setNewPokemon(pokemon,0);
+						battle.setNewPokemon(opponent,1);
+					
+						opponent.autoSelectMoves();
+
+						pokemon.setShields(2);
+						opponent.setShields(2);
+						battle.simulate();
+
+						// Calculate Battle Rating for each Pokemon
+		
+						var healthRating = (pokemon.hp / pokemon.stats.hp);
+						var damageRating = ((opponent.stats.hp - opponent.hp) / (opponent.stats.hp));
+		
+						var opHealthRating = (opponent.hp / opponent.stats.hp);
+						var opDamageRating = ((pokemon.stats.hp - pokemon.hp) / (pokemon.stats.hp));
+		
+						var rating = Math.floor( (healthRating + damageRating) * 500);
+						var opRating = Math.floor( (opHealthRating + opDamageRating) * 500);
+		
+						// Modify ratings by shields burned and shields remaining
+		
+						var winMultiplier = 1;
+						var opWinMultiplier = 1;
+		
+						if(rating > opRating){
+							opWinMultiplier = 0;
+						} else{
+							winMultiplier = 0;
+						}
+		
+						var adjRating = rating + ( (100 * (opponent.startingShields - opponent.shields) * winMultiplier) + (100 * pokemon.shields * winMultiplier));
+						var adjOpRating = opRating + ( (100 * (pokemon.startingShields - pokemon.shields) * opWinMultiplier) + (100 * opponent.shields * opWinMultiplier));
+
+						leadResult = adjRating;
+						leadResult[versusId] = leadResult;
+ 						if (leadResult > 500) {
+							leadWins++;
+						}
+					}
 					if (versusResult != undefined) {
 						//console.log(versusId + " found");
  						if (versusResult > 500) {
@@ -314,8 +364,11 @@ var RankerMaster = (function () {
 						}
 					}
 				}
+				if (leadWins > maxLeadWins) {
+					maxLeadWins = leadWins;
+				}
 			}
-			return teamWins.size;
+			return teamWins.size + maxLeadWins * 0.5;
 		}
 
 		this.getPokemonWithMovesId = function(pokemon) {
