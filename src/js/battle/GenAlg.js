@@ -264,7 +264,7 @@ var RankerMaster = (function () {
 					var versusResult = versusResults[versusId];
 					var leadResult = leadResults[versusId];
 					if (leadResult != undefined) {
- 						if (leadResult > 500) {
+ 						if (leadResult >= 508) {
 							leadWins++;
 						}
 					} else {
@@ -305,13 +305,13 @@ var RankerMaster = (function () {
 
 						leadResult = adjRating;
 						leadResult[versusId] = leadResult;
- 						if (leadResult > 500) {
+ 						if (leadResult >= 508) {
 							leadWins++;
 						}
 					}
 					if (versusResult != undefined) {
 						//console.log(versusId + " found");
- 						if (versusResult > 500) {
+ 						if (versusResult >= 508) {
 							teamWins.add(opponent.speciesId);
 						}
 					} else {
@@ -359,7 +359,7 @@ var RankerMaster = (function () {
 
 						}
 						versusResults[versusId] = minResult;
-						if (minResult > 500) {
+						if (minResult >= 508) {
 							teamWins.add(opponent.speciesId);
 						}
 					}
