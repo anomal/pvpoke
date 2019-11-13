@@ -91,7 +91,8 @@ var RankerMaster = (function () {
 				
 				// If you want to rank specfic Pokemon, you can enter their species id's here
 				
-				var allowedList = [];
+				//var allowedList = [];
+var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "bibarel", "bidoof", "blitzle", "buizel", "buneary", "camerupt", "cranidos", "cubone", "delcatty", "donphan", "drillbur", "eevee", "electrike", "entei", "espeon", "excadrill", "exploud", "flaaffy", "flareon", "floatzel", "furret", "gabite", "garchomp", "gible", "girafarig", "glaceon", "glameow", "granbull", "growlithe", "grumpig", "heatmor", "herdier", "hippopotas", "hippowdon", "houndoom", "houndour", "jolteon", "kangaskhan", "lairon", "larvitar", "lickilicky", "lickitung", "liepard", "lillipup", "linoone", "lopunny", "luxio", "luxray", "mamoswine", "manectric", "mareep", "marowak", "marowak_alolan", "meowth", "meowth_alolan", "mightyena", "miltank", "minun", "nidoking", "nidoqueen", "nidoran_female", "nidoran_male", "nidorina", "nidorino", "ninetales", "ninetales_alolan", "numel", "pachirisu", "patrat", "persian", "persian_alolan", "phanpy", "pichu", "pikachu", "piloswine", "plusle", "ponyta", "poochyena", "pupitar", "purrloin", "purugly", "raichu", "raichu_alolan", "raikou", "rampardos", "rapidash", "raticate", "raticate_alolan", "rattata", "rattata_alolan", "rhydon", "rhyhorn", "rhyperior", "sandslash", "sandslash_alolan", "sandshrew", "sandshrew_alolan", "sentret", "shelgon", "shinx", "skitty", "skuntank", "smeargle", "sneasel", "spoink", "stantler", "stoutland", "stunky", "suicune", "swinub", "tauros", "teddiursa", "torkoal", "tyranitar", "umbreon", "ursaring", "vaporeon", "vulpix", "vulpix_alolan", "watchog", "weavile", "zangoose", "zebstrika", "zigzagoon"]
 				var includeTypes = ["ghost", "psychic", "fighting", "steel"];
 				var excludeTypes = ["dark"];
 				var excludeIds = ["skarmory", "hypno"];
@@ -172,8 +173,8 @@ var RankerMaster = (function () {
 					if (gen % 100 == 0) {
 						console.log("gen: " + gen);
 					}
-					var teamLen = teams.length;
-					for (var t=0; t<teamLen; t++) {
+					var teamsLen = teams.length;
+					for (var t=0; t<teamsLen; t++) {
 						if (gen % 100 == 0) {
 							console.log("Team" + t);
 						}
