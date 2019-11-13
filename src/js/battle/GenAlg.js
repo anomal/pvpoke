@@ -323,8 +323,8 @@ var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "
 						
 						opponent.autoSelectMoves();
 
-						var minResult = null;
-						for (var s=0; s<=2; s++) {
+						var minResult = leadResult;
+						for (var s=0; s<=1; s++) {
 							pokemon.setShields(s);
 							opponent.setShields(s);
 							battle.simulate();
