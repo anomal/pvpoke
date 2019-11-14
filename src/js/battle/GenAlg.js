@@ -254,6 +254,7 @@ var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "
 		this.getFitness = function(team, pokemonList, versusResults, leadResults) {
 			const teamWins = new Set();
 			var maxLeadWins = 0;
+			const commonWeaknesses = {};
 			var teamLen = team.length;
 			for (var m=0; m<teamLen; m++) {
 				var pokemon = team[m];
@@ -264,11 +265,7 @@ var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "
 					var versusId = getVersusId(pokemon, opponent);
 					var versusResult = versusResults[versusId];
 					var leadResult = leadResults[versusId];
-					if (leadResult != undefined) {
- 						if (leadResult >= 508) {
-							leadWins++;
-						}
-					} else {
+					if (leadResult == undefined) {
 						var battle = new Battle();
 						battle.setNewPokemon(pokemon,0);
 						battle.setNewPokemon(opponent,1);
@@ -306,9 +303,16 @@ var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "
 
 						leadResult = adjRating;
 						leadResult[versusId] = leadResult;
- 						if (leadResult >= 508) {
-							leadWins++;
+					}
+					if (leadResult >= 508) {
+						leadWins++;
+					} else if (leadResult < 500) {
+						var oppId = getPokemonWithMovesId(opponent);
+						var losses = commonWeaknesses[oppId];
+						if (losses == undefined) {
+							losses = 0;
 						}
+						commonWeaknesses[oppId] = losses + 1;
 					}
 					if (versusResult != undefined) {
 						//console.log(versusId + " found");
@@ -364,12 +368,23 @@ var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "
 							teamWins.add(opponent.speciesId);
 						}
 					}
+
 				}
 				if (leadWins > maxLeadWins) {
 					maxLeadWins = leadWins;
 				}
 			}
-			return teamWins.size + maxLeadWins * 0.5;
+			var keys = Object.keys(commonWeaknesses);
+			var keysLen = keys.length;
+			var maxCommonWeakness = 0;
+			for (var k = 0; k < keysLen; k++) {
+				var val = commonWeaknesses[k];
+				if (val > maxCommonWeakness) {
+					maxCommonWeakness = val;
+				}
+			}
+			var weaknessWeight = Math.max(maxCommonWeakness - 2, 0);
+			return teamWins.size + maxLeadWins * 0.5 + weaknessWeight;
 		}
 
 		this.getPokemonWithMovesId = function(pokemon) {
