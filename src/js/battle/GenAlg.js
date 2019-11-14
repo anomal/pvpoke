@@ -91,8 +91,8 @@ var RankerMaster = (function () {
 				
 				// If you want to rank specfic Pokemon, you can enter their species id's here
 				
-				//var allowedList = [];
-var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "bibarel", "bidoof", "blitzle", "buizel", "buneary", "camerupt", "cranidos", "cubone", "delcatty", "donphan", "drillbur", "eevee", "electrike", "entei", "espeon", "excadrill", "exploud", "flaaffy", "flareon", "floatzel", "furret", "gabite", "garchomp", "gible", "girafarig", "glaceon", "glameow", "granbull", "growlithe", "grumpig", "heatmor", "herdier", "hippopotas", "hippowdon", "houndoom", "houndour", "jolteon", "kangaskhan", "lairon", "larvitar", "lickilicky", "lickitung", "liepard", "lillipup", "linoone", "lopunny", "luxio", "luxray", "mamoswine", "manectric", "mareep", "marowak", "marowak_alolan", "meowth", "meowth_alolan", "mightyena", "miltank", "minun", "nidoking", "nidoqueen", "nidoran_female", "nidoran_male", "nidorina", "nidorino", "ninetales", "ninetales_alolan", "numel", "pachirisu", "patrat", "persian", "persian_alolan", "phanpy", "pichu", "pikachu", "piloswine", "plusle", "ponyta", "poochyena", "pupitar", "purrloin", "purugly", "raichu", "raichu_alolan", "raikou", "rampardos", "rapidash", "raticate", "raticate_alolan", "rattata", "rattata_alolan", "rhydon", "rhyhorn", "rhyperior", "sandslash", "sandslash_alolan", "sandshrew", "sandshrew_alolan", "sentret", "shelgon", "shinx", "skitty", "skuntank", "smeargle", "sneasel", "spoink", "stantler", "stoutland", "stunky", "suicune", "swinub", "tauros", "teddiursa", "torkoal", "tyranitar", "umbreon", "ursaring", "vaporeon", "vulpix", "vulpix_alolan", "watchog", "weavile", "zangoose", "zebstrika", "zigzagoon"]
+				var allowedList = [];
+//var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "bibarel", "bidoof", "blitzle", "buizel", "buneary", "camerupt", "cranidos", "cubone", "delcatty", "donphan", "drillbur", "eevee", "electrike", "entei", "espeon", "excadrill", "exploud", "flaaffy", "flareon", "floatzel", "furret", "gabite", "garchomp", "gible", "girafarig", "glaceon", "glameow", "granbull", "growlithe", "grumpig", "heatmor", "herdier", "hippopotas", "hippowdon", "houndoom", "houndour", "jolteon", "kangaskhan", "lairon", "larvitar", "lickilicky", "lickitung", "liepard", "lillipup", "linoone", "lopunny", "luxio", "luxray", "mamoswine", "manectric", "mareep", "marowak", "marowak_alolan", "meowth", "meowth_alolan", "mightyena", "miltank", "minun", "nidoking", "nidoqueen", "nidoran_female", "nidoran_male", "nidorina", "nidorino", "ninetales", "ninetales_alolan", "numel", "pachirisu", "patrat", "persian", "persian_alolan", "phanpy", "pichu", "pikachu", "piloswine", "plusle", "ponyta", "poochyena", "pupitar", "purrloin", "purugly", "raichu", "raichu_alolan", "raikou", "rampardos", "rapidash", "raticate", "raticate_alolan", "rattata", "rattata_alolan", "rhydon", "rhyhorn", "rhyperior", "sandslash", "sandslash_alolan", "sandshrew", "sandshrew_alolan", "sentret", "shelgon", "shinx", "skitty", "skuntank", "smeargle", "sneasel", "spoink", "stantler", "stoutland", "stunky", "suicune", "swinub", "tauros", "teddiursa", "torkoal", "tyranitar", "umbreon", "ursaring", "vaporeon", "vulpix", "vulpix_alolan", "watchog", "weavile", "zangoose", "zebstrika", "zigzagoon"]
 				var includeTypes = ["ghost", "psychic", "fighting", "steel"];
 				var excludeTypes = ["dark"];
 				var excludeIds = ["skarmory", "hypno"];
@@ -134,12 +134,12 @@ var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "
 								continue;
 							}
 							
-							/*if ((includeTypes.indexOf(pokemon.types[0]) < 0 && includeTypes.indexOf(pokemon.types[1]) < 0) 
+							if ((includeTypes.indexOf(pokemon.types[0]) < 0 && includeTypes.indexOf(pokemon.types[1]) < 0) 
 									|| excludeTypes.indexOf(pokemon.types[0]) > -1 || excludeTypes.indexOf(pokemon.types[1]) > -1
 									|| excludeIds.indexOf(pokemon.speciesId) > -1
 									|| pokemon.tags.indexOf("mythical") > -1) {
 								continue;
-							}*/
+							}
 
 							pokemonList.push(pokemon);
 						}
@@ -189,6 +189,14 @@ var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "
 							}
 							if (i == mutationIndex) {
 								var pokemon = getRandomPokemon(pokemonList);
+								if (pokemon.speciesId == team[i].speciesId) {
+									var oldId = getPokemonWithMovesId(team[i]);
+									var newId = getPokemonWithMovesId(pokemon);
+									for (var j = 0; j < 10 && newId == oldId; j++) {
+										randomizeMoves(pokemon);
+										newId = getPokemonWithMovesId(pokemon);
+									}
+								} 
 								mutatedTeam[i] = pokemon;
 							} else {
 								mutatedTeam[i] = team[i];
@@ -200,8 +208,8 @@ var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "
 							console.log(s);
 						}
 
-						var oldFitness = getFitness(team, pokemonList, versusResults, leadResults);
-						var newFitness = getFitness(mutatedTeam, pokemonList, versusResults, leadResults);
+						var oldFitness = getFitness(team, pokemonList, versusResults, leadResults, gen);
+						var newFitness = getFitness(mutatedTeam, pokemonList, versusResults, leadResults, gen);
 
 						if (gen % 100 == 0) {
 							console.log("Current fitness: " + oldFitness);
@@ -251,10 +259,11 @@ var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "
 			return myPokemon;
 		}
 
-		this.getFitness = function(team, pokemonList, versusResults, leadResults) {
+		this.getFitness = function(team, pokemonList, versusResults, leadResults, gen) {
 			const teamWins = new Set();
 			var maxLeadWins = 0;
 			const commonWeaknesses = {};
+			var safeLead = null;
 			var teamLen = team.length;
 			for (var m=0; m<teamLen; m++) {
 				var pokemon = team[m];
@@ -372,8 +381,15 @@ var allowedList = ["absol", "aggron", "ampharos", "arcanine", "aron", "bagon", "
 				}
 				if (leadWins > maxLeadWins) {
 					maxLeadWins = leadWins;
+					if (gen % 100 == 0) {
+						safeLead = getPokemonWithMovesId(pokemon);
+					}
 				}
 			}
+			if (gen % 100 == 0) {
+				console.log("Safest lead: " + safeLead);
+			}
+
 			var keys = Object.keys(commonWeaknesses);
 			var keysLen = keys.length;
 			var maxCommonWeakness = 0;
